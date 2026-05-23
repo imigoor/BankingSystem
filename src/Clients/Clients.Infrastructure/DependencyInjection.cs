@@ -25,7 +25,11 @@ public static class DependencyInjection
         services.AddDbContext<ClientsDbContext>(options =>
             options.UseSqlServer(
                 configuration.GetConnectionString("ClientsDb"),
-                b => b.MigrationsAssembly(typeof(ClientsDbContext).Assembly.FullName)));
+                b =>
+                {
+                    b.MigrationsAssembly(typeof(ClientsDbContext).Assembly.FullName);
+                    b.CommandTimeout(120);
+                }));
 
         services.AddScoped<IClientRepository, ClientRepository>();
 

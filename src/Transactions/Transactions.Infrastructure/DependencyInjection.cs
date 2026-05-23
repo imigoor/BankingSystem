@@ -25,7 +25,11 @@ public static class DependencyInjection
         services.AddDbContext<TransactionsDbContext>(options =>
             options.UseSqlServer(
                 configuration.GetConnectionString("TransactionsDb"),
-                b => b.MigrationsAssembly(typeof(TransactionsDbContext).Assembly.FullName)));
+                b => 
+                {
+                    b.MigrationsAssembly(typeof(TransactionsDbContext).Assembly.FullName);
+                    b.CommandTimeout(120);
+                }));
 
         services.AddScoped<ITransferRepository, TransferRepository>();
 
@@ -99,7 +103,7 @@ public static class DependencyInjection
 
     private static IAsyncPolicy<HttpResponseMessage> GetTimeoutPolicy()
         => Policy.TimeoutAsync<HttpResponseMessage>(
-            TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(60),
             onTimeoutAsync: (_, timeout, _, _) =>
             {
                 Console.WriteLine($"[Polly Timeout] Request timed out after {timeout.TotalSeconds}s");
