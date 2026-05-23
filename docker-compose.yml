@@ -1,0 +1,102 @@
+version: "3.9"
+
+services:
+
+  # ── SQL Server ──────────────────────────────────────────────────────────────
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: banking_sqlserver
+    environment:
+      SA_PASSWORD: "${SQL_SERVER_PASSWORD}"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"${SQL_SERVER_PASSWORD}\" -Q \"SELECT 1\" || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - banking_net
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: banking_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - banking_net
+
+  # ── Transactions API ────────────────────────────────────────────────────────
+  transactions-api:
+    build:
+      context: .
+      dockerfile: src/Transactions/Transactions.API/Dockerfile
+    container_name: banking_transactions_api
+    ports:
+      - "5001:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__TransactionsDb: "Server=sqlserver,1433;Database=TransactionsDb;User Id=sa;Password=${SQL_SERVER_PASSWORD};TrustServerCertificate=True;"
+      JwtSettings__Secret: "${JWT_SECRET}"
+      JwtSettings__Issuer: "BankingSystem.Transactions"
+      JwtSettings__Audience: "BankingSystem.Clients"
+      Services__ClientsService__BaseUrl: "http://clients-api:8080"
+      AzureServiceBus__ConnectionString: "${AZURE_SERVICE_BUS_CONNECTION_STRING}"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - banking_net
+
+  # ── Clients API ─────────────────────────────────────────────────────────────
+  clients-api:
+    build:
+      context: .
+      dockerfile: src/Clients/Clients.API/Dockerfile
+    container_name: banking_clients_api
+    ports:
+      - "5002:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__ClientsDb: "Server=sqlserver,1433;Database=ClientsDb;User Id=sa;Password=${SQL_SERVER_PASSWORD};TrustServerCertificate=True;"
+      JwtSettings__Secret: "${JWT_SECRET}"
+      JwtSettings__Issuer: "BankingSystem.Clients"
+      JwtSettings__Audience: "BankingSystem.Transactions"
+      Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
+      AzureBlobStorage__ConnectionString: "${AZURE_BLOB_CONNECTION_STRING}"
+      AzureBlobStorage__ContainerName: "profile-pictures"
+      AzureServiceBus__ConnectionString: "${AZURE_SERVICE_BUS_CONNECTION_STRING}"
+      SendGrid__ApiKey: "${SENDGRID_API_KEY}"
+      SendGrid__FromEmail: "${SENDGRID_FROM_EMAIL}"
+      SendGrid__FromName: "Banking System"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - banking_net
+
+volumes:
+  sqlserver_data:
+  redis_data:
+
+networks:
+  banking_net:
+    driver: bridge
