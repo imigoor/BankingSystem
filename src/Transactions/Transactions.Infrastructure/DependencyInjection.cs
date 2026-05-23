@@ -56,7 +56,7 @@ public static class DependencyInjection
 
             x.UsingAzureServiceBus((ctx, cfg) =>
             {
-                cfg.Host(configuration["AzureServiceBus:ConnectionString"]);
+                cfg.Host(configuration["ServiceBus:ConnectionString"]);
 
                 cfg.SubscriptionEndpoint<ClientBankingDataUpdatedConsumer>(
                     "transactions-banking-updates",

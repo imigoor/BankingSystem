@@ -41,8 +41,8 @@ public static class DependencyInjection
 
         // --- Azure Blob Storage ---
         services.AddSingleton(new BlobServiceClient(
-            configuration["AzureBlobStorage:ConnectionString"]
-                ?? throw new InvalidOperationException("AzureBlobStorage:ConnectionString not configured.")));
+            configuration["BlobStorage:ConnectionString"]
+                ?? throw new InvalidOperationException("BlobStorage:ConnectionString not configured.")));
 
         services.AddScoped<IBlobStorageService, AzureBlobStorageService>();
 
@@ -59,7 +59,7 @@ public static class DependencyInjection
         {
             x.UsingAzureServiceBus((_, cfg) =>
             {
-                cfg.Host(configuration["AzureServiceBus:ConnectionString"]);
+                cfg.Host(configuration["ServiceBus:ConnectionString"]);
             });
         });
 

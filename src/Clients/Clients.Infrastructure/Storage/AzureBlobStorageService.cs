@@ -18,8 +18,8 @@ public class AzureBlobStorageService : IBlobStorageService
         ILogger<AzureBlobStorageService> logger)
     {
         _blobServiceClient = blobServiceClient;
-        _containerName = configuration["AzureBlobStorage:ContainerName"]
-            ?? throw new InvalidOperationException("AzureBlobStorage:ContainerName not configured.");
+        _containerName = configuration["BlobStorage:ContainerName"]
+            ?? throw new InvalidOperationException("BlobStorage:ContainerName not configured.");
         _logger = logger;
     }
 
