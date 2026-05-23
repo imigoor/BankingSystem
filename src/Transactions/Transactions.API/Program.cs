@@ -1,8 +1,9 @@
-using System.Text;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 using Transactions.API.Middlewares;
 using Transactions.Application;
 using Transactions.Infrastructure;
@@ -115,7 +116,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<Transactions.Infrastructure.Persistence.TransactionsDbContext>();
-        db.Database.EnsureCreated();
+        db.Database.Migrate();
+        Log.Information("ClientsDb migrated successfully");
     }
     catch (Exception ex)
     {

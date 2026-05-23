@@ -1,11 +1,12 @@
-using System.Text;
 using Asp.Versioning;
 using Clients.API.Middlewares;
 using Clients.Application;
 using Clients.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -114,7 +115,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<Clients.Infrastructure.Persistence.ClientsDbContext>();
-        db.Database.EnsureCreated();
+        db.Database.Migrate();
+        Log.Information("ClientsDb migrated successfully");
     }
     catch (Exception ex)
     {
