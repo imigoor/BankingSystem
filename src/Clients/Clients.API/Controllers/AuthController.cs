@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Clients.API.Requests.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +19,7 @@ public sealed class AuthController : ControllerBase
     public AuthController(IConfiguration configuration)
         => _configuration = configuration;
 
+    /// <summary> Authenticates a user and generates a JWT token for accessing protected client endpoints. </summary>
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -63,5 +65,3 @@ public sealed class AuthController : ControllerBase
         };
     }
 }
-
-public sealed record LoginRequest(string Username, string Password);

@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Transactions.API.Requests.Auth;
 
 namespace Transactions.API.Controllers;
 
@@ -21,6 +22,7 @@ public sealed class AuthController : ControllerBase
         _configuration = configuration;
     }
 
+    /// <summary> Authenticates a user and generates a JWT token for accessing protected transaction endpoints. </summary>
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -66,5 +68,3 @@ public sealed class AuthController : ControllerBase
         };
     }
 }
-
-public sealed record LoginRequest(string Username, string Password);

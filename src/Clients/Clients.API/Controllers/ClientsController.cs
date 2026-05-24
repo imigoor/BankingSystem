@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Clients.API.Requests.Client;
 using Clients.Application.DTOs;
 using Clients.Application.Features.GetClient;
 using Clients.Application.Features.UpdateClient;
@@ -20,6 +21,7 @@ public sealed class ClientsController : ControllerBase
     public ClientsController(IMediator mediator)
         => _mediator = mediator;
 
+    /// <summary> Retrieves a specific client's details and banking information by their unique identifier. </summary>
     [HttpGet("{id:guid}")]
     [Authorize(Roles = "User,Admin")]
     [ProducesResponseType(typeof(ClientResponseDto), StatusCodes.Status200OK)]
@@ -31,6 +33,7 @@ public sealed class ClientsController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary> Updates the personal and banking information of a specific client. </summary>
     [HttpPatch("{id:guid}")]
     [Authorize(Roles = "User,Admin")]
     [ProducesResponseType(typeof(ClientResponseDto), StatusCodes.Status200OK)]
@@ -50,8 +53,9 @@ public sealed class ClientsController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary> Uploads and updates the profile picture for a specific client. Restricted to Admin role. </summary>
     [HttpPatch("{id:guid}/profile-picture")]
-    [Authorize(Roles = "User,Admin")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
