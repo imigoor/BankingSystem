@@ -44,17 +44,17 @@ BankingSystem/
 
 ```
 ┌──────────────────┐         HTTP Síncrono + Polly          ┌──────────────────┐
-│  Transactions    │ ─────────────────────────────────────► │    Clients        │
-│      API         │   GET /clients/{id}/exists              │      API          │
-│                  │   (Retry 3x · CircuitBreaker · 30s)    │                  │
-└────────┬─────────┘                                         └────────┬──────────┘
+│  Transactions    │ ─────────────────────────────────────► │    Clients       │
+│      API         │   GET /api/v1/clients/{id}             │      API         │
+│               (Retry 3x · CircuitBreaker 5/30s · Timeout 60s)                │
+└────────┬─────────┘                                         └────────┬────────┘
          │                                                            │
          │  EF Core                                         EF Core  │  Redis Cache
          ▼                                                            ▼
   ┌─────────────┐                                        ┌───────────────────────┐
-  │  SQL Server  │                                        │  SQL Server + Redis   │
-  │ TransactionsDB│                                       │     ClientsDB         │
-  └─────────────┘                                         └───────────────────────┘
+  │  SQL Server │                                        │  SQL Server + Redis   │
+  │TransactionsDB│                                       │     ClientsDB         │
+  └─────────────┘                                        └───────────────────────┘
          │                                                            │
          │          Azure Service Bus (Assíncrono)                    │
          ◄────────────────────────────────────────────────────────────┘
