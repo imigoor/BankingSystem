@@ -74,7 +74,7 @@ BankingSystem/
 |--------|------|-----------|------|
 | `POST` | `/api/v1/auth/login` | Gera JWT Bearer token | Público |
 | `POST` | `/api/v1/transfers` | Cria nova transferência | User, Admin |
-| `GET`  | `/api/v1/transfers/{id}` | Detalhes de uma transferência | User, Admin |
+| `GET`  | `/api/v1/transfers/{id}` | Detalhes de uma transferência | Admin |
 | `GET`  | `/api/v1/users/{userId}/transfers` | Transferências de um usuário | User, Admin |
 
 ### Microsserviço de Clientes (porta 5002 local / Azure)
@@ -83,9 +83,8 @@ BankingSystem/
 |--------|------|-----------|------|
 | `POST` | `/api/v1/auth/login` | Gera JWT Bearer token | Público |
 | `GET`  | `/api/v1/clients/{id}` | Detalhes do cliente (Redis → SQL) | User, Admin |
-| `GET`  | `/api/v1/clients/{id}/exists` | Verificação interna (sem auth) | Público |
 | `PATCH`| `/api/v1/clients/{id}` | Atualização parcial dos dados | User, Admin |
-| `PATCH`| `/api/v1/clients/{id}/profile-picture` | Upload de foto (Azure Blob) | User, Admin |
+| `PATCH`| `/api/v1/clients/{id}/profile-picture` | Upload de foto (Azure Blob) | Admin |
 
 ---
 
