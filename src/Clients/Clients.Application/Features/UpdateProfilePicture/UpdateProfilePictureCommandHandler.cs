@@ -27,17 +27,12 @@ public sealed class UpdateProfilePictureCommandHandler : IRequestHandler<UpdateP
 
     public async Task<string> Handle(UpdateProfilePictureCommand request, CancellationToken cancellationToken)
     {
-        var client = await _clientRepository.GetByIdAsync(request.ClientId, cancellationToken)
-            ?? throw new ClientNotFoundException(request.ClientId);
+        var client = await _clientRepository.GetByIdAsync(request.ClientId, cancellationToken) ?? throw new ClientNotFoundException(request.ClientId);
 
         _logger.LogInformation("Uploading profile picture for client {ClientId}", request.ClientId);
 
-        var blobName = $"profile-pictures/{request.ClientId}/{Guid.NewGuid()}-{request.FileName}";
-        var pictureUrl = await _blobStorageService.UploadAsync(
-            request.FileStream,
-            blobName,
-            request.ContentType,
-            cancellationToken);
+        var blobName = $"profile-images/{request.ClientId}/{Guid.NewGuid()}-{request.FileName}";
+        var pictureUrl = await _blobStorageService.UploadAsync(request.FileStream, blobName, request.ContentType, cancellationToken);
 
         client.UpdateProfilePicture(pictureUrl);
 
