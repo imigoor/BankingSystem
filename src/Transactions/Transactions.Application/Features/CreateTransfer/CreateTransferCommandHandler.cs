@@ -34,7 +34,6 @@ public sealed class CreateTransferCommandHandler : IRequestHandler<CreateTransfe
         _logger.LogInformation("Processing transfer from {SenderId} to {ReceiverId} amount {Amount}",
             request.SenderUserId, request.ReceiverUserId, request.Amount);
 
-        // Validate both clients exist via HTTP call with Polly resilience
         var senderExists = await _clientServiceClient.ClientExistsAsync(request.SenderUserId, cancellationToken);
         if (!senderExists)
             throw new InvalidOperationException($"Sender client {request.SenderUserId} not found.");
