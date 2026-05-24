@@ -116,7 +116,7 @@ Aplicada na comunicação HTTP do Transactions → Clients service, com três po
 |---|---|---|
 | **Retry** | 3 tentativas, backoff exponencial (2s, 4s, 8s) | Falhas transitórias de rede e cold-start de containers |
 | **Circuit Breaker** | Abre após 5 falhas consecutivas, fecha em 30s | Evita sobrecarga do Clients service durante indisponibilidade |
-| **Timeout** | 5s por tentativa | Previne starvation de threads em chamadas pendentes |
+| **Timeout** | 60s por tentativa | Acomoda latência do Azure SQL Serverless durante hibernação |
 
 Documentação completa em [`docs/RESILIENCE.md`](docs/RESILIENCE.md).
 
