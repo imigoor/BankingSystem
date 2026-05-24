@@ -40,8 +40,7 @@ public static class DependencyInjection
 
         services.AddHttpClient<IClientServiceClient, ClientServiceClient>(client =>
         {
-            var baseUrl = configuration["Services:ClientsService:BaseUrl"]
-                ?? throw new InvalidOperationException("ClientsService BaseUrl not configured.");
+            var baseUrl = configuration["Services:ClientsService:BaseUrl"] ?? throw new InvalidOperationException("ClientsService BaseUrl not configured.");
             client.BaseAddress = new Uri(baseUrl);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         })
@@ -61,10 +60,7 @@ public static class DependencyInjection
             x.UsingAzureServiceBus((ctx, cfg) =>
             {
                 cfg.Host(configuration["ServiceBus:ConnectionString"]);
-
-                cfg.SubscriptionEndpoint<ClientBankingDataUpdatedConsumer>(
-                    "transactions-banking-updates",
-                    e => e.ConfigureConsumer<ClientBankingDataUpdatedConsumer>(ctx));
+                cfg.ConfigureEndpoints(ctx);
             });
         });
 
