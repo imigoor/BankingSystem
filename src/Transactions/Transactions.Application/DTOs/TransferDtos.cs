@@ -9,10 +9,3 @@ public sealed record TransferResponseDto(
     string Status,
     DateTime CreatedAt
 );
-
-public sealed record CreateTransferRequest(
-    Guid SenderUserId,
-    Guid ReceiverUserId,
-    decimal Amount,
-    string Description
-);
