@@ -1,32 +1,36 @@
+using Clients.Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Transactions.Infrastructure.Messaging.Consumers;
-
-public sealed record ClientBankingDataUpdatedEvent(
-    Guid ClientId,
-    string NewAgency,
-    string NewAccountNumber,
-    DateTime UpdatedAt
-);
-
-
-public sealed class ClientBankingDataUpdatedConsumer : IConsumer<ClientBankingDataUpdatedEvent>
+namespace Clients.Infrastructure.Messaging
 {
-    private readonly ILogger<ClientBankingDataUpdatedConsumer> _logger;
+    public sealed record ClientBankingDataUpdatedEvent(
+        Guid ClientId,
+        string NewAgency,
+        string NewAccountNumber,
+        DateTime UpdatedAt
+    );
+}
 
-    public ClientBankingDataUpdatedConsumer(ILogger<ClientBankingDataUpdatedConsumer> logger)
+
+namespace Transactions.Infrastructure.Messaging.Consumers
+{
+    public sealed class ClientBankingDataUpdatedConsumer : IConsumer<ClientBankingDataUpdatedEvent>
     {
-        _logger = logger;
-    }
+        private readonly ILogger<ClientBankingDataUpdatedConsumer> _logger;
 
-    public Task Consume(ConsumeContext<ClientBankingDataUpdatedEvent> context)
-    {
-        var evt = context.Message;
-        _logger.LogInformation(
-            "Received ClientBankingDataUpdated event for ClientId={ClientId}. New Agency={Agency}, Account={Account}",
-            evt.ClientId, evt.NewAgency, evt.NewAccountNumber);
+        public ClientBankingDataUpdatedConsumer(ILogger<ClientBankingDataUpdatedConsumer> logger) { _logger = logger; }
 
-        return Task.CompletedTask;
+        public Task Consume(ConsumeContext<ClientBankingDataUpdatedEvent> context)
+        {
+            var evt = context.Message;
+            _logger.LogInformation(
+                "Received ClientBankingDataUpdated event for ClientId={ClientId}. New Agency={Agency}, Account={Account}",
+                evt.ClientId,
+                evt.NewAgency,
+                evt.NewAccountNumber);
+
+            return Task.CompletedTask;
+        }
     }
 }

@@ -4,10 +4,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Clients.Infrastructure.Messaging;
 
-/// <summary>
-/// Integration event published to Azure Service Bus when a client updates their banking details.
-/// The Transactions microservice consumes this event to invalidate its local client cache.
-/// </summary>
 public sealed record ClientBankingDataUpdatedEvent(
     Guid ClientId,
     string NewAgency,
@@ -26,11 +22,7 @@ public class ClientEventPublisher : IClientEventPublisher
         _logger = logger;
     }
 
-    public async Task PublishBankingDataUpdatedAsync(
-        Guid clientId,
-        string newAgency,
-        string newAccountNumber,
-        CancellationToken cancellationToken = default)
+    public async Task PublishBankingDataUpdatedAsync(Guid clientId, string newAgency,  string newAccountNumber, CancellationToken cancellationToken = default)
     {
         var evt = new ClientBankingDataUpdatedEvent(clientId, newAgency, newAccountNumber, DateTime.UtcNow);
         await _publishEndpoint.Publish(evt, cancellationToken);
