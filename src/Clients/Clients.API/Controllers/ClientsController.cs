@@ -5,7 +5,6 @@ using Clients.Application.Features.UpdateClient;
 using Clients.Application.Features.UpdateProfilePicture;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clients.API.Controllers;
@@ -38,10 +37,7 @@ public sealed class ClientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Update(
-        Guid id,
-        [FromBody] UpdateClientRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateClientRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateClientCommand(
             id,
@@ -60,10 +56,7 @@ public sealed class ClientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> UpdateProfilePicture(
-        Guid id,
-        IFormFile profilePicture,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProfilePicture(Guid id, IFormFile profilePicture, CancellationToken cancellationToken)
     {
         if (profilePicture is null || profilePicture.Length == 0)
             return BadRequest(new { message = "Profile picture file is required." });
@@ -72,7 +65,7 @@ public sealed class ClientsController : ControllerBase
         if (!allowedTypes.Contains(profilePicture.ContentType))
             return BadRequest(new { message = "Only JPEG, PNG and WEBP images are allowed." });
 
-        const long maxSize = 5 * 1024 * 1024; // 5 MB
+        const long maxSize = 5 * 1024 * 1024;
         if (profilePicture.Length > maxSize)
             return BadRequest(new { message = "File size cannot exceed 5 MB." });
 

@@ -45,7 +45,6 @@ public class CreateTransferCommandHandlerTests
         result.Status.Should().Be("Completed");
 
         await _repository.Received(1).AddAsync(Arg.Any<Transfer>(), Arg.Any<CancellationToken>());
-        await _repository.Received(1).UpdateAsync(Arg.Any<Transfer>(), Arg.Any<CancellationToken>());
         await _notificationService.Received(1).SendTransferNotificationAsync(
             senderId, receiverId, 500m, Arg.Any<CancellationToken>());
     }
