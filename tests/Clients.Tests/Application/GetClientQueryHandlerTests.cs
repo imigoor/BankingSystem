@@ -42,7 +42,6 @@ public class GetClientQueryHandlerTests
         result.Id.Should().Be(clientId);
         result.Name.Should().Be("John Doe");
 
-        // Must NOT have called the database
         await _repository.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
@@ -56,7 +55,6 @@ public class GetClientQueryHandlerTests
         _cacheService.GetAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((ClientResponseDto?)null);
 
-        // Use reflection to set private Id for test (or expose for testing via factory)
         _repository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(client);
 
@@ -71,7 +69,6 @@ public class GetClientQueryHandlerTests
         result.Email.Should().Be("jane@example.com");
         result.BankingDetails.Agency.Should().Be("0002");
 
-        // Cache should have been populated
         await _cacheService.Received(1).SetAsync(Arg.Any<ClientResponseDto>(), Arg.Any<CancellationToken>());
     }
 
